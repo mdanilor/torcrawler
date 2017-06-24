@@ -15,7 +15,7 @@ def getContent(url):
     except urllib2.HTTPError, err:
         print "Erro na url " + url
         return 0
-    except URLError:
-	print "Erro na url " + url
-	return 0
+    except Exception:
+        print "Erro na url " + url
+        return 0
 
