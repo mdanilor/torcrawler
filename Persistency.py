@@ -208,7 +208,13 @@ def releaseHiddenService(hiddenServiceId, status):
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
-    cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s", (status, datetime.datetime.now(),hiddenServiceId))
+    now = datetime.datetime.now()
+    if status == 2:
+        cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s, LastSeenOnline=%s WHERE Id=%s",
+                       (status, now, now, hiddenServiceId))
+    else:
+        cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s",
+                       (status, now, hiddenServiceId))
     db.commit()
     db.close()
 
