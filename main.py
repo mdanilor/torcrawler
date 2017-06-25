@@ -51,7 +51,7 @@ def run():
             except Exception:
                 continue
 
-                print "%s: Thread %s just processed content" % (datetime.datetime.now(), threadNum)
+            print "%s: Thread %s just processed content" % (datetime.datetime.now(), threadNum)
 
             title = processor.title #Getting data
             for newLink in processor.links:
