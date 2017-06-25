@@ -173,7 +173,7 @@ def getOldHiddenService():
         return None
     res = cursor.fetchall()
     db.close()
-    return res
+    return res[0]
 
 def getDoubleCheckedHiddenService():
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
