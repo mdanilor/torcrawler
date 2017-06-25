@@ -134,6 +134,8 @@ def newLink(link):
 
     if ".onion" not in url:
         return
+    if ".com/" in url or ".org/" in url:
+        return
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
