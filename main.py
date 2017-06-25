@@ -29,10 +29,10 @@ def run():
 
         if hs is None:
             continue
-        link = 0 #Just a random initial value.
+        processor.domainId = hs
         while linkCount < 1:
             link = Persistency.getLink(hs)
-            print "%s: Thread %s just got a new link" % (datetime.datetime.now(), threadNum)
+            print "%s: Thread %s just got a new link" % (datetime.datetime.now())
             if link is None:
                 break
             linkCount += 1 #MAX OF 100 LINKS PER DOMAIN
@@ -40,10 +40,10 @@ def run():
             content = TorUrlProcessor.getContent(link[1])
 
             if content == 0: #In case there was a problem getting the link content
-                Persistency.saveLink(link, None, None, 3, threadNum)
+                Persistency.saveLink(link, None, None, 3)
                 break
             if "content-type: text" not in str(content[0]).lower(): #In case we got content, but it's not readable text
-                Persistency.saveLink(link, None, content, 4, threadNum)
+                Persistency.saveLink(link, None, content, 4)
                 continue
             try:
                 processor.feed(content[1]) #Processing data
@@ -54,8 +54,7 @@ def run():
             title = processor.title #Getting data
             for newLink in processor.links:
                 Persistency.newLink(newLink) #Potential new links to process
-                print "%s: Thread %s just inputed a new link" % (datetime.datetime.now(), threadNum)
-            Persistency.saveLink(link, title, content, 2, threadNum) #Saving this link's data.
+            Persistency.saveLink(link, title, content, 2) #Saving this link's data.
 
 threadCount = ConfigLoader.threadcount
 

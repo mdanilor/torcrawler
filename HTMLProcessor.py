@@ -9,6 +9,7 @@ class HTMLProcessor (HTMLParser):
         self.title = ""
         self.lastTag = ""
         self.baseLink = ""
+        self.domainId = 0
         HTMLParser.__init__(self)
 
     def handle_starttag(self, tag, attrs):
@@ -17,9 +18,9 @@ class HTMLProcessor (HTMLParser):
         for attr in attrs:
             if attr[0] == "href":
                 if "http://" not in attr[1] and "https://" not in attr[1]:
-                    self.links.append(self.baseLink + attr[1])
+                    self.links.append([self.baseLink + attr[1], self.domainId])
                 elif ".onion" in attr[1]:
-                    self.links.append(attr[1])
+                    self.links.append([attr[1], 0])
 
     # def handle_endtag(self, tag):
     #     if self.printData == 1:
