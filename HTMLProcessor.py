@@ -34,7 +34,7 @@ class HTMLProcessor (HTMLParser):
 
     def handle_data(self, data):
         if self.lastTag == "title" and len(data.strip()) > 0:
-            self.title = data.strip()
+            self.title = data.decode().encode('utf-8', 'ignore').strip()
 
     def setLink(self, link):
         afterOnion = link.split(".onion", 1)

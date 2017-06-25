@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import urllib2
 import datetime
+import sys
 
 def getContent(url):
     opener = urllib2.build_opener(
@@ -10,8 +11,11 @@ def getContent(url):
     urllib2.install_opener(opener)
 
     try:
+        result = []
         response = urllib2.urlopen(url)
-        return response.read()
+        result.append(response.info())
+        result.append(response.read())
+        return result
     except urllib2.HTTPError, err:
         print "Erro na url " + url
         return 0

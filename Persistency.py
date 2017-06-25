@@ -66,10 +66,22 @@ def saveLink(link, title, content, status):
                          charset="utf8")
     cursor = db.cursor()
 
+    if status == 4: #In case it's not a text/html
+        cursor.execute("UPDATE Links SET Status=4, Header=%s WHERE Id=%s", (content[0], link[0]))
+        db.commit()
+        db.close()
+        return
+    if status == 3: #In case of nothing found
+        if (link[2] == 1):
+            cursor.execute("UPDATE HiddenServices SET Status=%s WHERE Id=%s", (status, link[3]))
+        cursor.execute("UPDATE Links SET Status=3 WHERE Id=%s", (link[0], ))
+        db.commit()
+        db.close()
+        return
     #save content to file:
     filename = hashlib.md5(link[1]).hexdigest() + ".html"
 
-    contentHash = hashlib.md5(content).hexdigest()
+    contentHash = hashlib.md5(content[1]).hexdigest()
 
     domain = link[1].replace("http://", "", 1)
     domain = domain.replace("https://", "", 1)
@@ -82,18 +94,18 @@ def saveLink(link, title, content, status):
 
     with open(path, "w") as file:
         try:
-            file.write(content.decode().encode('utf-8', 'ignore').strip())
+            file.write(content[1].decode().encode('utf-8', 'ignore').strip())
         except UnicodeDecodeError:
             print  ("Unicode decode error while saving file. Moving on.")
 
 
     try:
-        query = "UPDATE Links SET Title=%s, ResourcePath=%s, HTMLHash=%s, Status=%s WHERE Id=%s"
-        cursor.execute(query, (title, path, contentHash, status, link[0]))
+        query = "UPDATE Links SET Title=%s, ResourcePath=%s, HTMLHash=%s, Status=%s, Header=%s WHERE Id=%s"
+        cursor.execute(query, (title, path, contentHash, status, content[0], link[0]))
     except UnicodeDecodeError:
         print ("Unicode decode error while saving title. Moving on.")
-        query = "UPDATE Links SET ResourcePath=%s, HTMLHash=%s, Status=%s WHERE Id=%s"
-        cursor.execute(query, (path, contentHash, status, link[0]))
+        query = "UPDATE Links SET ResourcePath=%s, HTMLHash=%s, Status=%s, Header=%s WHERE Id=%s"
+        cursor.execute(query, (path, contentHash, status, content[0], link[0]))
 
 
     cursor.execute("UPDATE HiddenServices SET LatestScan=%s WHERE Id=%s", (datetime.datetime.now(), link[3]))
