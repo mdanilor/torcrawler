@@ -20,14 +20,14 @@ i = 0
 def run():
     global i
     print "Starting thread %d"%i
+    processor = HTMLProcessor.HTMLProcessor()
     while 1:
         linkCount = 0
         hs = Persistency.getNewHiddenService()
         if hs is None:
             continue
-        processor = HTMLProcessor.HTMLProcessor()
         link = 0 #Just a random initial value.
-        while linkCount < 100:
+        while linkCount < 50:
             link = Persistency.getLink(hs)
             if link is None:
                 break
