@@ -25,11 +25,13 @@ def run():
     while 1:
         linkCount = 0
         hs = Persistency.getNewHiddenService()
+        print "%s: Thread %s just started processing a new hidden service" % (datetime.datetime.now(), threadNum)
         if hs is None:
             continue
         link = 0 #Just a random initial value.
         while linkCount < 1:
             link = Persistency.getLink(hs)
+            print "%s: Thread %s just got a new link" % (datetime.datetime.now(), threadNum)
             if link is None:
                 break
             linkCount += 1 #MAX OF 100 LINKS PER DOMAIN
