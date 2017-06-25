@@ -14,6 +14,7 @@ def removeGarbage():
     cursor = db.cursor()
     cursor.execute("UPDATE HiddenServices SET Status=0 WHERE Status=1")
     cursor.execute("UPDATE Links SET Status=0 WHERE Status=1")
+    db.commit()
     db.close()
 
 def getNewHiddenService():
