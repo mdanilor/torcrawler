@@ -7,6 +7,7 @@ import sys
 import threading
 import ConfigLoader
 import datetime
+import time
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -31,6 +32,8 @@ def run():
             continue
         processor.domainId = hs
         while linkCount < 1:
+            epochI = int (time.time())
+
             link = Persistency.getLink(hs)
             if link is None:
                 break
@@ -54,6 +57,9 @@ def run():
             for newLink in processor.links:
                 Persistency.newLink(newLink) #Potential new links to process
             Persistency.saveLink(link, title, content, 2) #Saving this link's data.
+
+            epochF = int(time.time())
+            print "All done with URL %s. Took %s seconds"%(link[1], epochF-epochI)
 
 threadCount = ConfigLoader.threadcount
 
