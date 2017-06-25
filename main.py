@@ -61,6 +61,11 @@ def run():
             epochF = int(time.time())
             print "All done with URL %s. Took %s seconds"%(link[1], epochF-epochI)
 
+def reportEveryHour():
+    while 1:
+        time.sleep(3600)
+        Persistency.report()
+
 threadCount = ConfigLoader.threadcount
 
 #run()
@@ -70,3 +75,5 @@ Persistency.removeGarbage()
 while i < threadCount:
     threading.Thread(target=run).start()
     i += 1
+
+threading.Thread(target=reportEveryHour).start()
