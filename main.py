@@ -25,7 +25,8 @@ def run():
     while 1:
         linkCount = 0
         hs = Persistency.getNewHiddenService()
-        print "%s: Thread %s just started processing a new hidden service" % (datetime.datetime.now(), threadNum)
+        print "%s: Thread %s just started processing a new hidden service: %s" % (datetime.datetime.now(), threadNum, hs)
+
         if hs is None:
             continue
         link = 0 #Just a random initial value.
