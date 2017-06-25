@@ -29,7 +29,7 @@ def run():
         if hs is None:
             continue
         link = 0 #Just a random initial value.
-        while linkCount < 5:
+        while linkCount < 1:
             link = Persistency.getLink(hs)
             if link is None:
                 break
