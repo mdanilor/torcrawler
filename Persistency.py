@@ -7,6 +7,125 @@ import datetime
 import threading
 import ConfigLoader
 
+def createNewReport(cursor):
+    # creating new report
+    cursor.execute("INSERT INTO Report (StartTime) VALUES (%s)", (datetime.datetime.now(),))
+    cursor.execute("SELECT Id FROM Report ORDER BY Id DESC")  # getting latest report Id
+    res = cursor.fetchall()
+    reportId = res[0][0]
+    return reportId
+
+def createNewDataGroup(cursor, reportId, label):
+    cursor.execute("INSERT INTO DataGroup (ReportId, Label) VALUES (%s, %s)", (reportId, label))
+    cursor.execute("SELECT Id FROM DataGroup ORDER BY Id DESC")
+    res = cursor.fetchall()
+    dgId = res[0][0]
+    return dgId
+
+def createNewData(cursor, label, data, dgId):
+    cursor.execute("INSERT INTO Data (Label, Data, DataGroupId) VALUES (%s, %s, %s)", (label, data, dgId))
+
+def report():
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                         db=ConfigLoader.db, use_unicode=True,
+                         charset="utf8")
+    cursor = db.cursor()
+
+    #Creating new report
+    reportId = createNewReport(cursor)
+
+    #getting how many hidden services were found
+    dgId = createNewDataGroup(cursor, reportId, "Hidden Services Found")
+
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=2")
+    res = cursor.fetchall()
+    createNewData(cursor, "Online", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=3")
+    res = cursor.fetchall()
+    createNewData(cursor, "Offline", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=1")
+    res = cursor.fetchall()
+    createNewData(cursor, "Under analysis", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices")
+    res = cursor.fetchall()
+    createNewData(cursor, "Total", res[0][0], dgId)
+
+    #Getting which webserver is running
+    dgId = createNewDataGroup(cursor, reportId, "WebServer")
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%apache%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Apache", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%nginx%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Nginx", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%lighttpd%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Lighttpd", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%twistedweb%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "TwistedWeb", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%iis%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "IIS", res[0][0], dgId)
+
+    #Getting which operating system is running
+    dgId = createNewDataGroup(cursor, reportId, "Operating System")
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%Debian%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Debian", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%Ubuntu%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Ubuntu", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%CentOs%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "CentOs", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%FreeBSD%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "FreeBSD", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%Fedora%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Fedora", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%Suse%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Suse", res[0][0], dgId)
+
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE Status=2 AND IsIndex=1 AND Header LIKE '%Windows%'")
+    res = cursor.fetchall()
+    createNewData(cursor, "Windows", res[0][0], dgId)
+
+    #Getting mirror data
+    dgId = createNewDataGroup(cursor, reportId, "Mirrors")
+
+    cursor.execute("SELECT COUNT(*) AS UniqueCount, SUM(Mirrors.Count) AS MirrorCount FROM (SELECT COUNT(*) AS Count FROM Links WHERE IsIndex=1 AND Status='2' GROUP BY HTMLHash) Mirrors WHERE Mirrors.Count > 1")
+    res = cursor.fetchall()
+    createNewData(cursor, "Total mirrored", res[0][0], dgId)
+    createNewData(cursor, "Total mirrors", res[0][1], dgId)
+
+    dgId = createNewDataGroup(cursor, reportId, "TOP 10 Mirrored")
+    cursor.execute("SELECT Mirrors.Count AS Count, Mirrors.Hash AS Hash, Mirrors.Title AS Title FROM (SELECT COUNT(*) AS Count, HTMLHash as Hash, Title FROM Links WHERE IsIndex=1 AND Status='2' GROUP BY HTMLHash) Mirrors ORDER BY Mirrors.Count DESC LIMIT 10")
+    res = cursor.fetchall()
+    for result in res:
+        createNewData(cursor, result[2], result[0], dgId)
+
+    cursor.execute("UPDATE Report SET FinishTime=%s WHERE Id=%s", (datetime.datetime.now(), reportId))
+
+    db.commit()
+    db.close()
+
 def removeGarbage():
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
