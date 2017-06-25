@@ -143,7 +143,6 @@ def newLink(url):
         hiddenService = cursor.fetchall()
         if cursor.rowcount == 0:
             cursor.execute("INSERT INTO HiddenServices (Url, Status) VALUES (%s, %s)",(domainString, 0))
-            print "New hidden service found: " + domainString
             cursor.execute("SELECT Id FROM HiddenServices WHERE Url=%s", (domainString, ))
             result = cursor.fetchall()
             id = result[0][0]

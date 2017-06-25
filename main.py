@@ -6,7 +6,7 @@ import Persistency
 import sys
 import threading
 import ConfigLoader
-
+import datetime
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -19,9 +19,11 @@ i = 0
 
 def run():
     global i
-    print "Starting thread %d"%i
+    threadNum = i
+    print "Starting thread %d"%threadNum
     processor = HTMLProcessor.HTMLProcessor()
     while 1:
+        print "%s: Thread %s is scanning a new hidden service."%(datetime.datetime.now(), threadNum)
         linkCount = 0
         hs = Persistency.getNewHiddenService()
         if hs is None:
