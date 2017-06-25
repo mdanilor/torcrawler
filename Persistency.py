@@ -7,6 +7,14 @@ import datetime
 import threading
 import ConfigLoader
 
+def removeGarbage():
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                         db=ConfigLoader.db, use_unicode=True,
+                         charset="utf8")
+    cursor = db.cursor()
+    cursor.execute("UPDATE HiddenServices SET Status=0 WHERE Status=1")
+    cursor.execute("UPDATE Links SET Status=0 WHERE Status=1")
+
 def getNewHiddenService():
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password, db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
