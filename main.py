@@ -32,7 +32,6 @@ def run():
         processor.domainId = hs
         while linkCount < 1:
             link = Persistency.getLink(hs)
-            print "%s: Thread %s just got a new link" % (datetime.datetime.now())
             if link is None:
                 break
             linkCount += 1 #MAX OF 100 LINKS PER DOMAIN
