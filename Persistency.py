@@ -178,7 +178,7 @@ def getOldHiddenService(desc = 0):
         return None
     res = cursor.fetchall()
     db.close()
-    return res[0][0]
+    return res[0]
 
 def releaseHiddenService(hiddenServiceId, status):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,

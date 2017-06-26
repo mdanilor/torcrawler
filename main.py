@@ -74,10 +74,12 @@ def secondaryCheck():
     processor = HTMLProcessor.HTMLProcessor()
     while 1:
         linkCount = 0
-        hs = Persistency.getOldHiddenService(1)
+        hidd = Persistency.getOldHiddenService(1)
 
-        if hs is None:
+        if hidd is None:
             continue
+
+        hs = hidd[0]
 
         print "%s: Thread %s just started processing a new hidden service: %s" % (
             datetime.datetime.now(), threadNum, hs)
