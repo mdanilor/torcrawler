@@ -26,10 +26,13 @@ def initialCheck():
     while 1:
         linkCount = 0
         hs = Persistency.getNewHiddenService()
-        print "%s: Thread %s just started processing a new hidden service: %s" % (datetime.datetime.now(), threadNum, hs)
 
         if hs is None:
             continue
+
+        print "%s: Thread %s just started processing a new hidden service: %s" % (
+            datetime.datetime.now(), threadNum, hs)
+
         processor.domainId = hs
         while linkCount < 1:
             epochI = int (time.time())
@@ -44,6 +47,9 @@ def initialCheck():
             if content == 0: #In case there was a problem getting the link content
                 Persistency.saveLink(link, None, None, 3)
                 break
+
+            Persistency.releaseHiddenService(hs, 2)
+
             if "content-type: text" not in str(content[0]).lower(): #In case we got content, but it's not readable text
                 Persistency.saveLink(link, None, content, 4)
                 continue
@@ -95,12 +101,16 @@ def continueCrawling():
             link = Persistency.getLink(hs)
             if link is None:
                 break
+
             linkCount += 1  # MAX OF 10 LINKS PER DOMAIN
             processor.setLink(link[1])
             content = TorUrlProcessor.getContent(link[1])
 
             if content == 0:  # In case there was a problem getting the link content
                 continue;
+
+            Persistency.releaseHiddenService(hs, 2)
+
             if "content-type: text" not in str(
                     content[0]).lower():  # In case we got content, but it's not readable text
                 Persistency.saveLink(link, None, content, 4, 0)
