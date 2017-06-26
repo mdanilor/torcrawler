@@ -88,7 +88,7 @@ def continueCrawling():
     processor = HTMLProcessor.HTMLProcessor()
     while 1:
         linkCount = 0
-        hs = Persistency.getNewHiddenService()
+        hs = Persistency.getDoubleCheckedHiddenService()
         print "%s: Thread %s just started processing a new hidden service: %s" % (
         datetime.datetime.now(), threadNum, hs)
 
