@@ -156,14 +156,19 @@ def getNewHiddenService():
     db.close()
     return id
 
-def getOldHiddenService():
+def getOldHiddenService(desc = 0):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
-    cursor.execute(
-        "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=2 OR Status=3 ORDER BY LatestScan LIMIT 1",
-        (datetime.datetime.now(), threading._get_ident()))
+    if desc == 0:
+        cursor.execute(
+            "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=2 OR Status=3 ORDER BY LatestScan LIMIT 1",
+            (datetime.datetime.now(), threading._get_ident()))
+    else:
+        cursor.execute(
+            "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=2 OR Status=3 ORDER BY LatestScan DESC LIMIT 1",
+            (datetime.datetime.now(), threading._get_ident()))
     db.commit()
     threadNumber = threading._get_ident()
     cursor.execute("SELECT Id, Url FROM HiddenServices WHERE Status=1 AND ResponsibleThread=%s", (threadNumber,))
