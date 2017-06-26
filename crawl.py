@@ -26,13 +26,14 @@ def crawl():
 
         link = Persistency.getLink(domainId)
         if link is None:
-            break
+            time.sleep(1)
+            continue
         processor.setLink(link[1])
         content = TorUrlProcessor.getContent(link[1])
 
         if content == 0:  # In case there was a problem getting the link content
             Persistency.saveLink(link, None, None, 3)
-            break
+            continue
 
 
         if "content-type: text" not in str(content[0]).lower():  # In case we got content, but it's not readable text
