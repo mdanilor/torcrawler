@@ -199,8 +199,8 @@ def getDoubleCheckedHiddenService():
 
     cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (id,))
 
-    db.close()
     db.commit()
+    db.close()
     return id
 
 def releaseHiddenService(hiddenServiceId, status):
