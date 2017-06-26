@@ -18,7 +18,11 @@ class HTMLProcessor (HTMLParser):
         for attr in attrs:
             if attr[0] == "href":
                 if "http://" not in attr[1] and "https://" not in attr[1]:
-                    self.links.append([self.baseLink + attr[1].strip(), self.domainId])
+                    if attr[1][0] == "/":
+                        self.links.append([self.baseLink + attr[1][1:].strip(), self.domainId])
+                    else:
+                        self.links.append([self.baseLink + attr[1].strip(), self.domainId])
+
                 elif ".onion" in attr[1]:
                     self.links.append([attr[1].strip(), 0])
 
