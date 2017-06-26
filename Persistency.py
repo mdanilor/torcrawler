@@ -329,3 +329,42 @@ def newLink(link):
                             VALUES (%s, %s, %s, %s, %s)", (url, datetime.datetime.now(), domainId, isIndex, 0))
     db.commit()
     db.close()
+
+def getDomainFromUrl(domainUrl, linkUrl):
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                         db=ConfigLoader.db, use_unicode=True,
+                         charset="utf8")
+    cursor = db.cursor()
+
+    cursor.execute("SELECT Id FROM HiddenServices WHERE Url=%s", (domainUrl,))
+
+    res = cursor.fetchall()
+
+    now = datetime.datetime.now()
+
+    if cursor.rowcount == 0: #new hidden service case
+        cursor.execute("INSERT INTO HiddenServices (Url, Status, FirstScan, LatestScan) VALUES (%s, %s, %s, %s)", (domainUrl, 1, now, now))
+        cursor.execute("SELECT Id FROM HiddenServices WHERE Status=1, Url=%s", (domainUrl,))
+        res = cursor.fetchall()
+        id = res[0][0]
+    else: #in case it already exists
+        id = res[0][0]
+        cursor.execute("UPDATE HiddenServices SET Status=1 WHERE Id=%s", (id, ))
+
+    cursor.execute("SELECT Id, Status FROM Links WHERE HiddenServiceId=%s AND Url=%s", (id, linkUrl))
+
+    isIndex = 0
+    if linkUrl == domainUrl:
+        isIndex = 1
+
+    if cursor.rowcount == 0:
+        cursor.execute("INSERT INTO Links (Url, CreatedOn, HiddenServiceId, IsIndex, Status) VALUES (%s, %s, %s, %s, %s)",
+                       (linkUrl, datetime.datetime.now(), id, isIndex, 0))
+    else:
+        res = cursor.fetchall()
+        if res[0][1] != 0:
+            cursor.execute("UPDATE Links SET Status=0 WHERE Id=%s", (res[0][0], ))
+
+    db.commit()
+    db.close()
+    return id
