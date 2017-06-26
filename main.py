@@ -77,8 +77,10 @@ def recheckOnline():
             continue
         content = TorUrlProcessor.getContent(hs[1])
         if content == 0:
+            print "Broken link found on recheck"
             Persistency.releaseHiddenService(hs[0], 3)
         else:
+            print "Ok link found on recheck"
             Persistency.releaseHiddenService(hs[0], 2)
 
 def reportEveryHour():
