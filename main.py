@@ -97,5 +97,6 @@ while i < threadCount:
         threading.Thread(target=initialCheck).start()
     elif (i % 3 == 2):
         threading.Thread(target=recheckOnline).start()
+    i +=1
 
 threading.Thread(target=reportEveryHour).start()
