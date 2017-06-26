@@ -181,11 +181,15 @@ def getDoubleCheckedHiddenService():
                          charset="utf8")
     cursor = db.cursor()
 
+    print "Getting a double checked thread"
+
     cursor.execute(
         "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=5 ORDER BY Id LIMIT 1",
         (datetime.datetime.now(), datetime.datetime.now(), threading._get_ident()))
     threadNumber = threading._get_ident()
     cursor.execute("SELECT Id, Url FROM HiddenServices WHERE Status=1 AND ResponsibleThread=%s", (threadNumber,))
+
+    print "Executed SQL"
 
     result = cursor.fetchall()
 
@@ -196,6 +200,8 @@ def getDoubleCheckedHiddenService():
         return None
 
     id = int(result[0][0])
+
+    print "Id = %s"%id
 
     cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (id,))
 
