@@ -175,34 +175,6 @@ def getOldHiddenService():
     db.close()
     return res[0]
 
-def getDoubleCheckedHiddenService():
-    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
-                         db=ConfigLoader.db, use_unicode=True,
-                         charset="utf8")
-    cursor = db.cursor()
-
-    cursor.execute(
-        "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=5 ORDER BY Id LIMIT 1",
-        (datetime.datetime.now(), threading._get_ident()))
-    threadNumber = threading._get_ident()
-    cursor.execute("SELECT Id, Url FROM HiddenServices WHERE Status=1 AND ResponsibleThread=%s", (threadNumber,))
-
-    result = cursor.fetchall()
-
-    if cursor.rowcount == 0:
-        db.commit()
-        db.close()
-        time.sleep(1)
-        return None
-
-    id = int(result[0][0])
-
-    cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (id,))
-
-    db.commit()
-    db.close()
-    return id
-
 def releaseHiddenService(hiddenServiceId, status):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
