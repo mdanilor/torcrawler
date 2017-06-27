@@ -37,21 +37,17 @@ def report():
     #getting how many hidden services were found
     dgId = createNewDataGroup(cursor, reportId, "Hidden Services Found")
 
-    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE (Status=2 OR Status=5)")
+    cursor.execute("SELECT COUNT(*) FROM Links INNER JOIN HiddenServices ON Links.HiddenServiceId=HiddenServices.Id WHERE HiddenServices.Status = 2 AND Links.Status = 2 AND Links.IsIndex=1")
     res = cursor.fetchall()
     createNewData(cursor, "Online", res[0][0], dgId)
 
-    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=3")
+    cursor.execute("SELECT COUNT(*) FROM Links INNER JOIN HiddenServices ON Links.HiddenServiceId=HiddenServices.Id WHERE HiddenServices.Status = 3 AND Links.Status = 3 AND Links.IsIndex=1")
     res = cursor.fetchall()
     createNewData(cursor, "Offline", res[0][0], dgId)
 
     cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=1")
     res = cursor.fetchall()
     createNewData(cursor, "Under analysis", res[0][0], dgId)
-
-    cursor.execute("SELECT COUNT(*) FROM HiddenServices")
-    res = cursor.fetchall()
-    createNewData(cursor, "Total", res[0][0], dgId)
 
     #Getting which webserver is running
     dgId = createNewDataGroup(cursor, reportId, "WebServer")
