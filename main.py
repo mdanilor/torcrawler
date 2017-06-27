@@ -99,7 +99,7 @@ def secondaryCheck():
                 Persistency.saveLink(link, None, None, 3)
                 break
 
-            Persistency.releaseHiddenService(hs, 2)
+            #Persistency.releaseHiddenService(hs, 2)
 
             if "content-type: text" not in str(
                     content[0]).lower():  # In case we got content, but it's not readable text
@@ -148,7 +148,7 @@ Persistency.removeGarbage()
 while i < threadCount:
     if (i % 5 == 0):
         threading.Thread(target=initialCheck).start()
-    elif (i % 5 < 3 ):
+    elif (i % 5 < 4 ):
         threading.Thread(target=recheckOnline).start()
     else:
         threading.Thread(target = secondaryCheck).start()
