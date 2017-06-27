@@ -185,6 +185,7 @@ def releaseHiddenService(hiddenServiceId, status):
     if status == 2:
         cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s, LastSeenOnline=%s WHERE Id=%s",
                        (status, now, now, hiddenServiceId))
+        cursor.execute("UPDATE Links SET Status=2 WHERE HiddenServiceId=%s AND IsIndex=1", (hiddenServiceId))
     else:
         cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s",
                        (status, now, hiddenServiceId))
