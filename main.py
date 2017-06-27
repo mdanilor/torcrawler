@@ -48,7 +48,7 @@ def initialCheck():
                 Persistency.saveLink(link, None, None, 3)
                 break
 
-            Persistency.releaseHiddenService(hs, 2)
+            #Persistency.releaseHiddenService(hs, 2)
 
             if "content-type: text" not in str(content[0]).lower(): #In case we got content, but it's not readable text
                 Persistency.saveLink(link, None, content, 4)
