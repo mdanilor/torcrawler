@@ -377,7 +377,7 @@ def getBuggedLink():
         db.close()
         return None
     res = cursor.fetchall()
-    cursor.execute("UPDATE Links SET Status=6 WHERE Id=%s", (res[[0]],))
+    cursor.execute("UPDATE Links SET Status=6 WHERE Id=%s", (res[0][0],))
     db.commit()
     db.close()
     return res
