@@ -365,3 +365,19 @@ def getDomainFromUrl(domainUrl, linkUrl):
     db.commit()
     db.close()
     return id
+
+def getBuggedLink():
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                         db=ConfigLoader.db, use_unicode=True,
+                         charset="utf8")
+    cursor = db.cursor()
+
+    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HTMLHash IS Null AND IsIndex=1 AND Status=2 LIMIT 1")
+    if cursor.rowcount == 0:
+        db.close()
+        return None
+    res = cursor.fetchall()
+    cursor.execute("UPDATE Links SET Status=6 WHERE Id=%s", (res[[0]],))
+    db.commit()
+    db.close()
+    return res

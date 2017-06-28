@@ -139,19 +139,69 @@ def reportEveryHour():
         Persistency.report()
         time.sleep(3600)
 
-threadCount = ConfigLoader.threadcount
 
-#run()
+activeThreads = 0
+def fixStuff():
 
-Persistency.removeGarbage()
+    global activeThreads
+    activeThreads += 1
 
-while i < threadCount:
-    if (i % 5 == 0):
-        threading.Thread(target=initialCheck).start()
-    elif (i % 5 < 4 ):
-        threading.Thread(target=recheckOnline).start()
-    else:
-        threading.Thread(target = secondaryCheck).start()
-    i +=1
+    processor = HTMLProcessor.HTMLProcessor()
+    link = Persistency.getBuggedLink()
+    if link is None:
+        activeThreads -= 1
+        return
+    processor.setLink(link[1])
+    content = TorUrlProcessor.getContent(link[1])
 
-threading.Thread(target=reportEveryHour).start()
+    if content == 0:  # In case there was a problem getting the link content
+        Persistency.saveLink(link, None, None, 3)
+        activeThreads -= 1
+        return
+    if "content-type: text" not in str(
+            content[0]).lower():  # In case we got content, but it's not readable text
+        Persistency.saveLink(link, None, content, 4)
+        activeThreads -= 1
+        return
+    try:
+        processor.feed(content[1])  # Processing data
+    except Exception:
+        activeThreads -= 1
+        return
+    try:
+        processor.feed(content[1])  # Processing data
+    except Exception:
+        activeThreads -= 1
+        return
+    Persistency.saveLink(link, processor.title, content, 2)  # Saving this link's data.
+    print "Corrected link " + link[1]
+
+    activeThreads -=1
+
+    return
+
+def doFixing():
+    global activeThreads
+    while 1:
+        if activeThreads < 80:
+            threading.Thread(target=fixStuff()).start()
+
+doFixing()
+
+#
+# threadCount = ConfigLoader.threadcount
+#
+# #run()
+#
+# Persistency.removeGarbage()
+#
+# while i < threadCount:
+#     if (i % 5 == 0):
+#         threading.Thread(target=initialCheck).start()
+#     elif (i % 5 < 4 ):
+#         threading.Thread(target=recheckOnline).start()
+#     else:
+#         threading.Thread(target = secondaryCheck).start()
+#     i +=1
+#
+# threading.Thread(target=reportEveryHour).start()
