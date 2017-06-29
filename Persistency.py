@@ -37,15 +37,15 @@ def report():
     #getting how many hidden services were found
     dgId = createNewDataGroup(cursor, reportId, "Hidden Services Found")
 
-    cursor.execute("SELECT COUNT(*) FROM Links INNER JOIN HiddenServices ON Links.HiddenServiceId=HiddenServices.Id WHERE HiddenServices.Status = 2 AND Links.Status = 2 AND Links.IsIndex=1")
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND Status=2")
     res = cursor.fetchall()
     createNewData(cursor, "Online", res[0][0], dgId)
 
-    cursor.execute("SELECT COUNT(*) FROM Links INNER JOIN HiddenServices ON Links.HiddenServiceId=HiddenServices.Id WHERE HiddenServices.Status = 3 AND Links.Status = 3 AND Links.IsIndex=1")
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND Status=3")
     res = cursor.fetchall()
     createNewData(cursor, "Offline", res[0][0], dgId)
 
-    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=1")
+    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND (Status=0 OR STATUS=1)")
     res = cursor.fetchall()
     createNewData(cursor, "Under analysis", res[0][0], dgId)
 

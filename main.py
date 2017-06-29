@@ -184,6 +184,7 @@ def doFixing():
     global activeThreads
     while 1:
         if activeThreads < 80:
+
             threading.Thread(target=fixStuff()).start()
 
 doFixing()
