@@ -203,7 +203,7 @@ def getOldLink(hiddenServiceId):
                          charset="utf8")
     cursor = db.cursor()
 
-    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Id ASC")
+    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Id ASC", (hiddenServiceId,))
     res = cursor.fetchall()
     if cursor.rowcount == 0:
         db.close()
