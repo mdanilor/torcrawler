@@ -266,7 +266,7 @@ def saveLink(link, title, content, status, isNew = 1):
     cursor = db.cursor()
 
     if status == 3:
-        cursor.update("UPDATE Links SET Status=3 WHERE Id=%s", (link[0],))
+        cursor.execute("UPDATE Links SET Status=3 WHERE Id=%s", (link[0],))
         db.commit()
         db.close()
         return
