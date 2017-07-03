@@ -86,7 +86,7 @@ def checkOnline():
 
         #saving changes on link
         processor = HTMLProcessor.HTMLProcessor()
-        processor.feed(content)
+        processor.feed(content[1])
         for newLink in processor.links:
             Persistency.newLink(newLink)
         Persistency.saveLink(link, processor.title, content, 2, 0)
@@ -183,7 +183,7 @@ def main():
     while 1:
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
-            threading.Thread(target=crawlNewHiddenServices, args=(5,)).start()
+            threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
         else:
             counter +=1
 
