@@ -189,12 +189,7 @@ def main():
     threading.Thread(target=manageThreadMax).start()
 
     while 1:
-        time.sleep(0.5)
-        print crawlNewHiddenServicesThreadCount
-        print checkOnlineThreadCount
-        print continueCrawlingThreadCount
-
-        print " "
+        time.sleep(0.2)
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
             threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
