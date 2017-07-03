@@ -97,6 +97,8 @@ def continueCrawling(crawlCount):
     global continueCrawlingThreadCount
     continueCrawlingThreadCount += 1
 
+    processor = HTMLProcessor.HTMLProcessor()
+
     hs = Persistency.getOldHiddenService()
     hiddenService = hs[0]
 
@@ -180,7 +182,14 @@ def main():
 
     Persistency.removeGarbage()
     threading.Thread(target=manageThreadMax).start()
+
     while 1:
+        time.sleep(1)
+        print crawlNewHiddenServicesThreadCount
+        print checkOnlineThreadCount
+        print continueCrawlingThreadCount
+
+        print " "
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
             threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
