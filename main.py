@@ -197,8 +197,10 @@ def main():
         else:
             counter +=1
 
-        if counter == 0:
+        if counter == 3:
             time.sleep(1)
+            sum = crawlNewHiddenServicesThreadCount + checkOnlineThreadCount + continueCrawlingThreadCount
+            print "Total threads running: %s"%sum
 
     return
 
