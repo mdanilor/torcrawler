@@ -16,7 +16,7 @@ class HTMLProcessor (HTMLParser):
         self.lastTag = tag
         # print tag
         for attr in attrs:
-            if attr[0] == "href":
+            if attr[0] == "href" and attr[1] is not None and len(attr[1]) > 0:
                 if "http://" not in attr[1] and "https://" not in attr[1]:
                     if attr[1][0] == "/":
                         self.links.append([self.baseLink + attr[1][1:].strip(), self.domainId])

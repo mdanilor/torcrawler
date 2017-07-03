@@ -86,7 +86,10 @@ def checkOnline():
 
         #saving changes on link
         processor = HTMLProcessor.HTMLProcessor()
-        processor.feed(content[1])
+        try :
+            processor.feed(content[1])
+        except UnicodeDecodeError:
+            Persistency.saveLink(link, None, None, 4, 0)
         for newLink in processor.links:
             Persistency.newLink(newLink)
         Persistency.saveLink(link, processor.title, content, 2, 0)
