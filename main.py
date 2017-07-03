@@ -33,7 +33,7 @@ def crawlNewHiddenServices(crawlCount):
         link = Persistency.getLink(hiddenService)
 
         #In case there are no more links do display
-        if link is none:
+        if link is None:
             break
 
         print "Crawling %s" % link[1]
@@ -104,7 +104,7 @@ def continueCrawling(crawlCount):
         link = Persistency.getLink(hiddenService)
 
         # In case there are no more links do display
-        if link is none:
+        if link is None:
             break
 
         print "Crawling %s"%link[1]
