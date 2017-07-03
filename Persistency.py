@@ -7,6 +7,10 @@ import datetime
 import threading
 import ConfigLoader
 
+
+#FOR REPORTING:
+#FOR REPORTING:
+#FOR REPORTING:
 def createNewReport(cursor):
     # creating new report
     cursor.execute("INSERT INTO Report (StartTime) VALUES (%s)", (datetime.datetime.now(),))
@@ -122,6 +126,7 @@ def report():
     db.commit()
     db.close()
 
+#CLEANING THE GARBAGE IN THE DATABASE CAUSED BY FORCE CLOSE
 def removeGarbage():
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
@@ -132,31 +137,45 @@ def removeGarbage():
     db.commit()
     db.close()
 
+
+#ACTUAL PERSISTENCY
+
+#Gets a hidden service that hasn't been analysed yet.
 def getNewHiddenService():
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password, db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
 
+    #Marks the hidden service as 'under analysis'
     cursor.execute("UPDATE HiddenServices SET Status=1, FirstScan=%s, LatestScan=%s, ResponsibleThread=%s WHERE Status=0 ORDER BY Id LIMIT 1", (datetime.datetime.now(), datetime.datetime.now(), threading._get_ident()))
     db.commit()
+
     threadNumber = threading._get_ident()
+
+    #Retrieves it.
     cursor.execute("SELECT Id, Url FROM HiddenServices WHERE Status=1 AND ResponsibleThread=%s", (threadNumber, ))
     result = cursor.fetchall()
 
+    #In case no hidden service was returned, it returns None.
     if cursor.rowcount == 0:
         db.close()
         time.sleep(1)
         return None
 
+    #Returns the hidden service's Id.
     id = int(result[0][0])
     db.close()
     return id
 
+#Gets hidden services already analysed for a recheck.
+#Desc = 0 means it should get get the least recently checked first.
 def getOldHiddenService(desc = 0):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
+
+
     if desc == 0:
         cursor.execute(
             "UPDATE HiddenServices SET Status=1, LatestScan=%s, ResponsibleThread=%s WHERE Status=2 OR Status=3 ORDER BY LatestScan LIMIT 1",
@@ -167,6 +186,8 @@ def getOldHiddenService(desc = 0):
             (datetime.datetime.now(), threading._get_ident()))
     db.commit()
     threadNumber = threading._get_ident()
+
+    #Retrieves the hidden service
     cursor.execute("SELECT Id, Url FROM HiddenServices WHERE Status=1 AND ResponsibleThread=%s", (threadNumber,))
     if cursor.rowcount == 0:
         db.close()
@@ -176,36 +197,35 @@ def getOldHiddenService(desc = 0):
     db.close()
     return res[0]
 
+#Releases a hidden service with status
 def releaseHiddenService(hiddenServiceId, status):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
     now = datetime.datetime.now()
-    if status == 2:
-        cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s, LastSeenOnline=%s WHERE Id=%s",
-                       (status, now, now, hiddenServiceId))
-        cursor.execute("UPDATE Links SET Status=2 WHERE HiddenServiceId=%s AND IsIndex=1", (hiddenServiceId,))
-    else:
-        cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s",
+    cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s",
                        (status, now, hiddenServiceId))
+    # cursor.execute("UPDATE HiddenServices SET Status=%s WHERE HiddenServiceId=%s AND IsIndex=1", (status, hiddenServiceId))
     db.commit()
     db.close()
 
+# Gets a unanalysed link from a hidden service
 def getLink(hiddenServiceId):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
                          charset="utf8")
     cursor = db.cursor()
 
+    #Gets a URL from a hidden service id.
     cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE Status=0 AND HiddenServiceId=%s ORDER BY Id LIMIT 1", (hiddenServiceId,))
     result = cursor.fetchall()
     if cursor.rowcount == 0:
-        cursor.execute("SELECT Status FROM HiddenServices WHERE Id=%s", (hiddenServiceId, ))
+        # cursor.execute("SELECT Status FROM HiddenServices WHERE Id=%s", (hiddenServiceId, ))
         statusResult = cursor.fetchall()
-        if statusResult[0][0] != 3:
-            cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (hiddenServiceId, ))
-            db.commit()
+        # if statusResult[0][0] != 3:
+        #     cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (hiddenServiceId, ))
+        #     db.commit()
         db.close();
         return None
 
@@ -236,12 +256,7 @@ def saveLink(link, title, content, status, isNew = 1):
         db.commit()
         db.close()
         return
-    if status == 3: #In case of nothing found
-        cursor.execute("UPDATE HiddenServices SET Status=%s WHERE Id=%s", (status, link[3]))
-        cursor.execute("UPDATE Links SET Status=3 WHERE Id=%s", (link[0], ))
-        db.commit()
-        db.close()
-        return
+
     #save content to file:
     filename = hashlib.md5(link[1]).hexdigest() + ".html"
 
@@ -272,13 +287,8 @@ def saveLink(link, title, content, status, isNew = 1):
         cursor.execute(query, (path, contentHash, status, content[0], link[0]))
 
 
-    cursor.execute("UPDATE HiddenServices SET LatestScan=%s WHERE Id=%s", (datetime.datetime.now(), link[3]))
-
-    if isNew == 1:
-        if (link[2]  == 1):
-            cursor.execute("UPDATE HiddenServices SET Status=%s, Name=%s WHERE Id=%s", (status, title, link[3]))
-        if status == 2 :
-            cursor.execute("UPDATE HiddenServices SET LastSeenOnline=%s WHERE Id=%s", (datetime.datetime.now(), link[3]))
+    if link[2] == 1 and title is not None and title != "":
+        cursor.execute("UPDATE HiddenServices SET Name=%s WHERE Id=%s", (title, link[3]))
 
     db.commit()
     db.close()
@@ -327,6 +337,8 @@ def newLink(link):
     db.commit()
     db.close()
 
+
+#For bugfixing.
 def getDomainFromUrl(domainUrl, linkUrl):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
                          db=ConfigLoader.db, use_unicode=True,
