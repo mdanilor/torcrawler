@@ -38,8 +38,11 @@ class HTMLProcessor (HTMLParser):
     #         print "\n"
 
     def handle_data(self, data):
-        if self.lastTag == "title" and len(data.strip()) > 0:
-            self.title = data.decode().encode('utf-8', 'ignore').strip()
+        try:
+            if self.lastTag == "title" and len(data.strip()) > 0:
+                self.title = data.decode().encode('utf-8', 'ignore').strip()
+        except UnicodeDecodeError:
+            self.title = None
 
     def setLink(self, link):
         afterOnion = link.split(".onion", 1)
