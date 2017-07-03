@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-threadcount=80
+threadcount=120
 host="localhost"
 user="root"
 password="t0r__CR@Wl3r"

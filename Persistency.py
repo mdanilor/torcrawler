@@ -197,6 +197,20 @@ def getOldHiddenService(desc = 0):
     db.close()
     return res[0]
 
+def getOldLink(hiddenServiceId):
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                         db=ConfigLoader.db, use_unicode=True,
+                         charset="utf8")
+    cursor = db.cursor()
+
+    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Id ASC")
+    res = cursor.fetchall()
+    if cursor.rowcount == 0:
+        db.close()
+        return None
+    link = res[0]
+    return link
+
 #Releases a hidden service with status
 def releaseHiddenService(hiddenServiceId, status):
     db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
@@ -222,7 +236,7 @@ def getLink(hiddenServiceId):
     result = cursor.fetchall()
     if cursor.rowcount == 0:
         # cursor.execute("SELECT Status FROM HiddenServices WHERE Id=%s", (hiddenServiceId, ))
-        statusResult = cursor.fetchall()
+        #statusResult = cursor.fetchall()
         # if statusResult[0][0] != 3:
         #     cursor.execute("UPDATE HiddenServices SET Status=2 WHERE Id=%s", (hiddenServiceId, ))
         #     db.commit()
@@ -336,6 +350,22 @@ def newLink(link):
                             VALUES (%s, %s, %s, %s, %s)", (url, datetime.datetime.now(), domainId, isIndex, 0))
     db.commit()
     db.close()
+
+def getCurrentStatistics():
+    db = MySQLdb.connect(host=ConfigLoader.host, user=ConfigLoader.user, passwd=ConfigLoader.password,
+                             db=ConfigLoader.db, use_unicode=True,
+                             charset="utf8")
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=0")
+    res = cursor.fetchall()
+    stat = []
+    stat.append(res[0][0])
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status!=0")
+    res = cursor.fetchall()
+    stat.append(res[0][0])
+    db.close()
+    return stat
+
 
 
 #For bugfixing.
