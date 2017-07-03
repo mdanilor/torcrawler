@@ -102,6 +102,8 @@ def continueCrawling(crawlCount):
     hs = Persistency.getOldHiddenService()
     hiddenService = hs[0]
 
+    isOnline = 0
+
     for i in range(crawlCount):
         link = Persistency.getLink(hiddenService)
 
