@@ -221,6 +221,8 @@ def releaseHiddenService(hiddenServiceId, status):
     now = datetime.datetime.now()
     cursor.execute("UPDATE HiddenServices SET Status=%s, LatestScan=%s WHERE Id=%s",
                        (status, now, hiddenServiceId))
+    if status == 2:
+        cursor.execute("UPDATE HiddenServices SET LastSeenOnline=%s WHERE Id=%s", (now, hiddenServiceId))
     # cursor.execute("UPDATE HiddenServices SET Status=%s WHERE HiddenServiceId=%s AND IsIndex=1", (status, hiddenServiceId))
     db.commit()
     db.close()
