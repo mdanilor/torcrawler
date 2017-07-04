@@ -41,17 +41,17 @@ def report():
     #getting how many hidden services were found
     dgId = createNewDataGroup(cursor, reportId, "Hidden Services Found")
 
-    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND Status=2")
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=2")
     res = cursor.fetchall()
     createNewData(cursor, "Online", res[0][0], dgId)
 
-    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND Status=3")
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices WHERE Status=3")
     res = cursor.fetchall()
     createNewData(cursor, "Offline", res[0][0], dgId)
 
-    cursor.execute("SELECT COUNT(*) FROM Links WHERE IsIndex=1 AND (Status=0 OR STATUS=1)")
+    cursor.execute("SELECT COUNT(*) FROM HiddenServices")
     res = cursor.fetchall()
-    createNewData(cursor, "Under analysis", res[0][0], dgId)
+    createNewData(cursor, "Total", res[0][0], dgId)
 
     #Getting which webserver is running
     dgId = createNewDataGroup(cursor, reportId, "WebServer")
