@@ -81,7 +81,7 @@ def checkOnline():
     except Exception:
         content = 0
 
-    print "Checking link %s"% link[1]
+    print "Checking link %s"% link[1].encode('utf-8')
     if content == 0:
         Persistency.releaseHiddenService(hs[0], 3)
         Persistency.saveLink(link, None, None, 3)
@@ -118,7 +118,7 @@ def continueCrawling(crawlCount):
         if link is None:
             break
 
-        print "Crawling %s"%link[1]
+        print "Crawling %s"%link[1].encode('utf-8')
 
         processor.setLink(link[1])
         content = TorUrlProcessor.getContent(link[1])
