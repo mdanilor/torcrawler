@@ -36,7 +36,7 @@ def crawlNewHiddenServices(crawlCount):
         if link is None:
             break
 
-        print "Crawling %s" % link[1]
+        print "Crawling %s" % link[1].encode('utf-8')
 
         processor.setLink(link[1])
         content = TorUrlProcessor.getContent(link[1])
