@@ -76,7 +76,11 @@ def checkOnline():
         checkOnlineThreadCount -= 1
         return
     link = Persistency.getOldLink(hs[0])
-    content = TorUrlProcessor.getContent(link[1])
+    try:
+        content = TorUrlProcessor.getContent(link[1])
+    except Exception:
+        content = 0
+
     print "Checking link %s"% link[1]
     if content == 0:
         Persistency.releaseHiddenService(hs[0], 3)
