@@ -275,7 +275,10 @@ def saveLink(link, title, content, status, isNew = 1):
         return
 
     if status == 4: #In case it's not a text/html
-        cursor.execute("UPDATE Links SET Status=4, Header=%s WHERE Id=%s", (content[0], link[0]))
+        if content[0] is not None:
+            cursor.execute("UPDATE Links SET Status=4, Header=%s WHERE Id=%s", (content[0], link[0]))
+        else:
+            cursor.execute("UPDATE Links SET Status=4, WHERE Id=%s", (link[0], ))
         db.commit()
         db.close()
         return
