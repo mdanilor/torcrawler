@@ -196,7 +196,7 @@ def main():
         time.sleep(0.2)
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
-            threading.Thread(target=crawlNewHiddenServices, args=(1,)).start()
+            threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
         else:
             time.sleep(1)
 
