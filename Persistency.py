@@ -162,6 +162,9 @@ def getNewHiddenService():
         time.sleep(1)
         return None
 
+    #Creates the correspondent link
+    cursor.execute("INSERT INTO Links (Url, CreatedOn, HiddenServiceId, IsIndex) VALUES (%s, %s, %s, %s)",
+                   (result[0][1], datetime.datetime.now(), result[0][0], 1))
     #Returns the hidden service's Id.
     id = int(result[0][0])
     db.close()

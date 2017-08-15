@@ -8,7 +8,7 @@ import ConfigLoader
 import datetime
 import time
 
-crawlNewHiddenServicesThreadMax = 0
+crawlNewHiddenServicesThreadMax = 100
 crawlNewHiddenServicesThreadCount = 0
 checkOnlineThreadMax = 0
 checkOnlineThreadCount = 0
@@ -32,7 +32,7 @@ def crawlNewHiddenServices(crawlCount):
     for i in range(crawlCount):
         link = Persistency.getLink(hiddenService)
 
-        #In case there are no more links do display
+        #In case there are no more links to display
         if link is None:
             break
 
@@ -57,8 +57,8 @@ def crawlNewHiddenServices(crawlCount):
         except Exception:
             continue
 
-        for newLink in processor.links:
-            Persistency.newLink(newLink)
+        # for newLink in processor.links:
+        #     Persistency.newLink(newLink)
 
         Persistency.saveLink(link, processor.title, content, 2)
 
@@ -190,30 +190,15 @@ def main():
     print "Initializing crawler"
 
     Persistency.removeGarbage()
-    threading.Thread(target=manageThreadMax).start()
+    # threading.Thread(target=manageThreadMax).start()
 
     while 1:
         time.sleep(0.2)
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
-            threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
+            threading.Thread(target=crawlNewHiddenServices, args=(1,)).start()
         else:
-            counter +=1
-
-        if checkOnlineThreadCount < checkOnlineThreadMax:
-            threading.Thread(target=checkOnline).start()
-        else:
-            counter +=1
-
-        if continueCrawlingThreadCount < continueCrawlingThreadMax:
-            threading.Thread(target=continueCrawling, args=(5,)).start()
-        else:
-            counter +=1
-
-        if counter == 3:
             time.sleep(1)
-            sum = crawlNewHiddenServicesThreadCount + checkOnlineThreadCount + continueCrawlingThreadCount
-            print "Total threads running: %s"%sum
 
     return
 
