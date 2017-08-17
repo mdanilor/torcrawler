@@ -9,7 +9,7 @@ import datetime
 import time
 
 crawlNewHiddenServicesThreadMax = 100
-crawlNewHiddenServicesThreadCount = 0
+crawlNewHiddenServicesThreadCount = 10
 checkOnlineThreadMax = 0
 checkOnlineThreadCount = 0
 continueCrawlingThreadMax = 0
@@ -75,13 +75,20 @@ def checkOnline():
     if hs is None:
         checkOnlineThreadCount -= 1
         return
-    link = Persistency.getOldLink(hs[0])
-    try:
-        content = TorUrlProcessor.getContent(link[1])
-    except Exception:
-        content = 0
+    links = Persistency.getOldLink(hs[0])
 
-    print "Checking link %s"% link[1].encode('utf-8')
+    for link in links:
+        print "Checking link %s" % link[1].encode('utf-8')
+        try:
+            content = TorUrlProcessor.getContent(link[1])
+        except Exception:
+            content = 0
+
+        if content != 0:
+            break
+
+
+
     if content == 0:
         Persistency.releaseHiddenService(hs[0], 3)
         Persistency.saveLink(link, None, None, 3)
@@ -94,8 +101,8 @@ def checkOnline():
             processor.feed(content[1])
         except UnicodeDecodeError:
             Persistency.saveLink(link, None, None, 4, 0)
-        for newLink in processor.links:
-            Persistency.newLink(newLink)
+        # for newLink in processor.links:
+        #     Persistency.newLink(newLink)
         Persistency.saveLink(link, processor.title, content, 2, 0)
 
     checkOnlineThreadCount -= 1
@@ -197,6 +204,8 @@ def main():
         counter = 0
         if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
             threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
+        elif checkOnlineThreadCount < checkOnlineThreadMax:
+            threading.Thread(target=checkOnline).start()
         else:
             time.sleep(1)
 

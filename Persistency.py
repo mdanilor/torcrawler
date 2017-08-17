@@ -209,13 +209,13 @@ def getOldLink(hiddenServiceId):
                          charset="utf8")
     cursor = db.cursor()
 
-    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Id ASC", (hiddenServiceId,))
+    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Status ASC", (hiddenServiceId,))
     res = cursor.fetchall()
     if cursor.rowcount == 0:
         db.close()
         return None
     db.close()
-    link = res[0]
+    link = res
     return link
 
 #Releases a hidden service with status
