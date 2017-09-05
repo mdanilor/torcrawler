@@ -9,10 +9,10 @@ import datetime
 import time
 
 crawlNewHiddenServicesThreadMax = 100
-crawlNewHiddenServicesThreadCount = 10
-checkOnlineThreadMax = 0
+crawlNewHiddenServicesThreadCount = 0
+checkOnlineThreadMax = 100
 checkOnlineThreadCount = 0
-continueCrawlingThreadMax = 0
+continueCrawlingThreadMax = 100
 continueCrawlingThreadCount = 0
 
 def crawlNewHiddenServices(crawlCount):
