@@ -57,8 +57,8 @@ def crawlNewHiddenServices(crawlCount):
         except Exception:
             continue
 
-        # for newLink in processor.links:
-        #     Persistency.newLink(newLink)
+        for newLink in processor.links:
+            Persistency.newLink(newLink)
 
         Persistency.saveLink(link, processor.title, content, 2)
 
@@ -197,18 +197,18 @@ def main():
     print "Initializing crawler"
 
     Persistency.removeGarbage()
-    # threading.Thread(target=manageThreadMax).start()
+    threading.Thread(target=manageThreadMax).start()
 
-    while 1:
-        time.sleep(0.2)
-        counter = 0
-        if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
-            threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
-        elif checkOnlineThreadCount < checkOnlineThreadMax:
-            threading.Thread(target=checkOnline).start()
-        else:
-            time.sleep(1)
-
-    return
+    # while 1:
+    #     time.sleep(0.2)
+    #     counter = 0
+    #     if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
+    #         threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
+    #     elif checkOnlineThreadCount < checkOnlineThreadMax:
+    #         threading.Thread(target=checkOnline).start()
+    #     else:
+    #         time.sleep(1)
+    #
+    # return
 
 main()

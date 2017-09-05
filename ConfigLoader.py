@@ -4,6 +4,6 @@ threadcount=120
 host="localhost"
 user="root"
 password="t0r__CR@Wl3r"
-db="crawler3"
+db="torcrawler"
 resources="/home/crawler/torcrawler/resources/"
 
