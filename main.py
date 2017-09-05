@@ -8,11 +8,11 @@ import ConfigLoader
 import datetime
 import time
 
-crawlNewHiddenServicesThreadMax = 100
+crawlNewHiddenServicesThreadMax = 0
 crawlNewHiddenServicesThreadCount = 0
-checkOnlineThreadMax = 100
+checkOnlineThreadMax = 0
 checkOnlineThreadCount = 0
-continueCrawlingThreadMax = 100
+continueCrawlingThreadMax = 0
 continueCrawlingThreadCount = 0
 
 def crawlNewHiddenServices(crawlCount):
@@ -32,7 +32,7 @@ def crawlNewHiddenServices(crawlCount):
     for i in range(crawlCount):
         link = Persistency.getLink(hiddenService)
 
-        #In case there are no more links to display
+        #In case there are no more links do display
         if link is None:
             break
 
@@ -75,20 +75,13 @@ def checkOnline():
     if hs is None:
         checkOnlineThreadCount -= 1
         return
-    links = Persistency.getOldLink(hs[0])
+    link = Persistency.getOldLink(hs[0])
+    try:
+        content = TorUrlProcessor.getContent(link[1])
+    except Exception:
+        content = 0
 
-    for link in links:
-        print "Checking link %s" % link[1].encode('utf-8')
-        try:
-            content = TorUrlProcessor.getContent(link[1])
-        except Exception:
-            content = 0
-
-        if content != 0:
-            break
-
-
-
+    print "Checking link %s"% link[1].encode('utf-8')
     if content == 0:
         Persistency.releaseHiddenService(hs[0], 3)
         Persistency.saveLink(link, None, None, 3)
@@ -101,8 +94,8 @@ def checkOnline():
             processor.feed(content[1])
         except UnicodeDecodeError:
             Persistency.saveLink(link, None, None, 4, 0)
-        # for newLink in processor.links:
-        #     Persistency.newLink(newLink)
+        for newLink in processor.links:
+            Persistency.newLink(newLink)
         Persistency.saveLink(link, processor.title, content, 2, 0)
 
     checkOnlineThreadCount -= 1
@@ -199,16 +192,29 @@ def main():
     Persistency.removeGarbage()
     threading.Thread(target=manageThreadMax).start()
 
-    # while 1:
-    #     time.sleep(0.2)
-    #     counter = 0
-    #     if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
-    #         threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
-    #     elif checkOnlineThreadCount < checkOnlineThreadMax:
-    #         threading.Thread(target=checkOnline).start()
-    #     else:
-    #         time.sleep(1)
-    #
-    # return
+    while 1:
+        time.sleep(0.2)
+        counter = 0
+        if crawlNewHiddenServicesThreadCount < crawlNewHiddenServicesThreadMax:
+            threading.Thread(target=crawlNewHiddenServices, args=(2,)).start()
+        else:
+            counter +=1
+
+        if checkOnlineThreadCount < checkOnlineThreadMax:
+            threading.Thread(target=checkOnline).start()
+        else:
+            counter +=1
+
+        if continueCrawlingThreadCount < continueCrawlingThreadMax:
+            threading.Thread(target=continueCrawling, args=(5,)).start()
+        else:
+            counter +=1
+
+        if counter == 3:
+            time.sleep(1)
+            sum = crawlNewHiddenServicesThreadCount + checkOnlineThreadCount + continueCrawlingThreadCount
+            print "Total threads running: %s"%sum
+
+    return
 
 main()
