@@ -162,12 +162,6 @@ def getNewHiddenService():
         time.sleep(1)
         return None
 
-    #Creates the correspondent link
-    cursor.execute("INSERT INTO Links (Url, CreatedOn, HiddenServiceId, IsIndex, Status) VALUES (%s, %s, %s, %s, %s)",
-                   ("http://" + result[0][1], datetime.datetime.now(), result[0][0], 1, 0))
-    cursor.execute("INSERT INTO Links (Url, CreatedOn, HiddenServiceId, IsIndex, Status) VALUES (%s, %s, %s, %s, %s)",
-                   ("https://" + result[0][1], datetime.datetime.now(), result[0][0], 1, 0))
-    db.commit();
     #Returns the hidden service's Id.
     id = int(result[0][0])
     db.close()
@@ -209,13 +203,13 @@ def getOldLink(hiddenServiceId):
                          charset="utf8")
     cursor = db.cursor()
 
-    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Status ASC", (hiddenServiceId,))
+    cursor.execute("SELECT Id, Url, IsIndex, HiddenServiceId FROM Links WHERE HiddenServiceId=%s ORDER BY IsIndex DESC, Id ASC", (hiddenServiceId,))
     res = cursor.fetchall()
     if cursor.rowcount == 0:
         db.close()
         return None
     db.close()
-    link = res
+    link = res[0]
     return link
 
 #Releases a hidden service with status
