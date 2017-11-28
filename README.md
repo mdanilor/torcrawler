@@ -8,7 +8,7 @@ Tor (duuh) - https://www.torproject.org/ ('apt-get install tor' on ubuntu)
 Privoxy - https://www.privoxy.org/ (also apt-get install on ubuntu)
 MySQL Server - https://www.mysql.com/ (apt-get install mysql-server on ubuntu)
 
-### Configure Privoxy
+#### Configure Privoxy
 Then you must alter Privoxy's config. Add the following line to the Privoxy config file (/etc/privoxy/config):
 
 `forward-socks5 / localhost:9050 .`
