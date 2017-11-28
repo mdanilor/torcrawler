@@ -3,10 +3,10 @@ A multi-thread hidden service crawler.
 
 ### Before you get started
 #### Install the required software
-You must have three software installed and configured on your computer. They are:
-Tor (duuh) - https://www.torproject.org/ ('apt-get install tor' on ubuntu)
-Privoxy - https://www.privoxy.org/ (also apt-get install on ubuntu)
-MySQL Server - https://www.mysql.com/ (apt-get install mysql-server on ubuntu)
+ - You must have three software installed and configured on your computer. They are:
+    1. Tor (duuh) - https://www.torproject.org/ ('apt-get install tor' on ubuntu)
+    2. Privoxy - https://www.privoxy.org/ (also apt-get install on ubuntu)
+    3. MySQL Server - https://www.mysql.com/ (apt-get install mysql-server on ubuntu)
 
 #### Configure Privoxy
 Then you must alter Privoxy's config. Add the following line to the Privoxy config file (/etc/privoxy/config):
