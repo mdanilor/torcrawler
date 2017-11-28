@@ -16,10 +16,7 @@ def getContent(url):
         result.append(response.info())
         result.append(response.read())
         return result
-    except urllib2.HTTPError, err:
-        print "Erro na url " + url.encode('utf-8')
-        return 0
     except Exception:
         print "Erro na url " + url.encode('utf-8')
-        return 0
+        return None
 
